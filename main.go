@@ -1,20 +1,35 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 )
 
-func main() {
+var cmdAlias map[string]string
 
-	git := exec.Command("git", os.Args[1:]...)
+func init() {
+	cmdAlias = make(map[string]string, 0)
+	cmdAlias["co"] = "checkout"
+}
+
+func main() {
+	git := exec.Command("git")
 	git.Stdin = os.Stdin
 	git.Stdout = os.Stdout
 	git.Stderr = os.Stderr
 
-	err := git.Run()
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "sd failed to exec: %s", err)
+	if len(os.Args) > 1 {
+
+		cmd := os.Args[1]
+		alias := cmdAlias[cmd]
+		if alias != "" {
+			git.Args = append(git.Args, alias)
+			git.Args = append(git.Args, os.Args[2:]...)
+		} else {
+			git.Args = append(git.Args, os.Args[1:]...)
+		}
+
 	}
+	git.Run()
+
 }
