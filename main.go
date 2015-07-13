@@ -29,6 +29,8 @@ func main() {
 			git.Args = append(git.Args, os.Args[1:]...)
 		}
 
+	} else {
+		git.Args = append(git.Args, "status")
 	}
 	git.Run()
 
