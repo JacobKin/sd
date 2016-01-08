@@ -5,11 +5,20 @@ import (
 	"os/exec"
 )
 
-var cmdAlias map[string]string
+var cmdAlias map[string][]string
 
 func init() {
-	cmdAlias = make(map[string]string, 0)
-	cmdAlias["co"] = "checkout"
+	cmdAlias = make(map[string][]string, 0)
+	cmdAlias["co"] = []string{"checkout"}
+	cmdAlias["bl"] = []string{"Branch", "--list"}
+	cmdAlias["pr"] = []string{"merge", "--no-ff"}
+	//cmdAlias["dw"] = ["pull", "origin", "[branch]"]
+	//cmdAlias["up"] = ["push", "origin", "[branch]"]
+	cmdAlias["rev"] = []string{"reset", "--hard"}
+	cmdAlias["hist"] = []string{"log", "-10"}
+	cmdAlias["fhist"] = []string{"log", "--follow"}
+	cmdAlias["sub"] = []string{"reset"}
+
 }
 
 func main() {
@@ -22,8 +31,8 @@ func main() {
 
 		cmd := os.Args[1]
 		alias := cmdAlias[cmd]
-		if alias != "" {
-			git.Args = append(git.Args, alias)
+		if len(alias) > 0 {
+			git.Args = append(git.Args, alias...)
 			git.Args = append(git.Args, os.Args[2:]...)
 		} else {
 			git.Args = append(git.Args, os.Args[1:]...)
